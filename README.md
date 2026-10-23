@@ -1,24 +1,50 @@
-# Novel Forge Studio — GitHub Pages edition
 
-This repository is laid out for GitHub Pages: `index.html` is in the repository root.
+# Novel Forge Studio — GitHub Pages edition v10
 
-## Publish
-1. Create a GitHub repository (for example, `novel-forge-studio`).
-2. Upload all files and the `optional-ai-backend` folder **from inside this directory**, not the ZIP itself. Keep `index.html` in the repository root.
-3. In repository **Settings → Pages**, select **Deploy from a branch**, **main**, and **/(root)**, then Save.
-4. Visit `https://YOUR-USERNAME.github.io/novel-forge-studio/` (replace the placeholders).
+This build is prepared for GitHub Pages hosting.
 
-The editor runs in the browser on desktop and Android. It does not run a Ren'Py executable in GitHub Pages; use the Ren'Py engine to play/build exported source. Save project backups regularly. Browser local storage is not shared between devices.
+## What changed in v10
 
-## Realistic image generator
+- Same dark hosted editor layout
+- Prompt-first image workflow
+- **Description box** with two main actions:
+  - **Get Images** → loads matching entries from a virtual 1,000,000+ image recipe catalog and fetches legal reference images from Wikimedia Commons
+  - **Generate** → sends the prompt to a hard-coded HTTPS image-generation backend URL
+- Preview panel, download, and add-to-project buttons
+- `sample-maya.png` included as a sample realistic character image
 
-The editor works online, but GitHub Pages **cannot run Python or image model inference**. Its image generator requires a separate HTTPS inference endpoint reachable by the browser. Enter that service's HTTPS `/api/generate-image` URL in **Image Generator → Realistic AI generator connection**. A server must support CORS for your GitHub Pages origin and use server-side authentication, rate limiting, and abuse prevention. Do **not** put secret keys in this public repository or in browser JavaScript.
+## Important note about GitHub Pages
 
-The `optional-ai-backend` folder contains local development server source, not a public-production deployment. It binds to loopback, does not implement hosted authentication/CORS, and requires separately downloaded model weights and a compatible GPU. It is *not* a ready-to-deploy public AI endpoint. Public hosting needs operational security controls and suitable GPU hosting.
+GitHub Pages can host the editor UI, but it cannot run the image model itself.
+The Generate button is wired to a hard-coded API variable in `studio-v10.js`:
 
-The million-entry procedural catalog contains image *recipes*, not one million realistic images. The included sample Maya image is a static example. Web reference searches are user-initiated; verify license and attribution before reuse.
+```js
+window.NOVEL_FORGE_IMAGE_API = 'https://YOUR-IMAGE-BACKEND.example/api/generate-image'
+```
 
-## Notes
-- GitHub Pages is a **public** web host; don't commit private stories, secrets, or images you lack rights to publish.
-- GitHub Pages is not a backend or GPU service.
-- After export, Ren'Py launcher/SDK is needed to turn the generated files into a tested desktop or Android game.
+Replace that placeholder URL with your real HTTPS backend endpoint.
+
+## Publish to GitHub Pages
+
+1. Upload these files to your repository root.
+2. Ensure `index.html` is in the root.
+3. In GitHub repository settings, enable Pages from the `main` branch and `/(root)`.
+4. Open your site URL.
+
+## Backend response format expected by Generate
+
+Return JSON in either of these shapes:
+
+```json
+{"data_url":"data:image/png;base64,..."}
+```
+
+or
+
+```json
+{"image_base64":"...","mime_type":"image/png"}
+```
+
+## Legal web references
+
+The Get Images action uses Wikimedia Commons for open-license reference results. Those are not automatically imported into your project.
