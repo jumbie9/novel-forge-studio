@@ -3,7 +3,7 @@
    Uses a hard-coded backend endpoint constant that the owner can point at their image server. */
 (function(){
 const NF10_TOTAL = 1000000;
-const NF10_DEFAULT_API ='https://novel-forge-images.rohanseeram.workers.dev/api/generate-image';
+const NF10_DEFAULT_API = 'https://YOUR-IMAGE-BACKEND.example/api/generate-image';
 window.NOVEL_FORGE_IMAGE_API = window.NOVEL_FORGE_IMAGE_API || NF10_DEFAULT_API;
 let nf10Prompt = 'Adult woman, warm smile, brunette hair, casual cardigan, cozy bedroom, photorealistic portrait';
 let nf10Outfit = 'Casual';
@@ -53,7 +53,7 @@ function nf10ApiUrl(){ return window.NOVEL_FORGE_IMAGE_API || NF10_DEFAULT_API; 
 async function nf10Generate(){
   nf10Read();
   const api=nf10ApiUrl();
-  if(!api || api.includes('YOUR-IMAGE-BACKEND.example'){ alert('The Generate button is wired to a hard-coded backend URL, but it is still the placeholder value. Edit studio-v10.js and replace NOVEL_FORGE_IMAGE_API with your real image API endpoint.'); return; }
+  if(!api || api===NF10_DEFAULT_API){ alert('The Generate button is wired to a hard-coded backend URL, but it is still the placeholder value. Edit studio-v10.js and replace NOVEL_FORGE_IMAGE_API with your real image API endpoint.'); return; }
   if(nf10Busy) return;
   nf10Busy=true;
   try{
@@ -71,6 +71,7 @@ async function nf10Generate(){
     const data=obj.data_url || (obj.image_base64 ? `data:${obj.mime_type||'image/png'};base64,${obj.image_base64}` : '');
     if(!/^data:image\/(png|jpeg|webp);base64,/.test(data)) throw new Error('Backend response did not include a supported image.');
     nf10Result={name:`ai_${Date.now()}.png`,data,kind:'image',prompt:nf10Prompt};
+    window.nf11LatestImage=nf10Result;
     render();
   }catch(err){ alert('Generate failed: '+err.message); }
   finally{ nf10Busy=false; }
